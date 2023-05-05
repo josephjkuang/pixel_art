@@ -1,6 +1,6 @@
 import numpy as np
 
-def upsample(image):
+def epx_upsample(image):
     h, w, c = image.shape
     output = np.zeros((2 * h, 2 * w, c), dtype=np.uint8)
     
