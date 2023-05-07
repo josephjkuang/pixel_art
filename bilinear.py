@@ -46,7 +46,3 @@ def bilinearInterpolation(image, scale):
                 outputImage[i, j, k] = interpolatedPixel
     
     return outputImage
-
-mario = cv2.imread('../inputs/mario.png')
-upscaledMario = bilinearInterpolation(mario, 5)
-cv2.imwrite('./bilinearMario.png', upscaledMario)

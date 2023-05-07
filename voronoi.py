@@ -1,4 +1,3 @@
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
@@ -7,7 +6,6 @@ from shapely.geometry.polygon import Polygon
 from similarityGraph import *
 import sys
 from utils import * 
-import networkx as nx
 
 # Adding the voronoi midpoints and finding associative color for it
 def get_voronoi_nodes(graph):
