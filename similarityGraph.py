@@ -5,9 +5,8 @@ import numpy as np
 # Milestone 1: Reshaping the pixels using the heuristics to make sure that they are grouped with their neighbors
 def create_similarity_graph(image):
     # Create a similarity graph from the input image using heuristics to group similar pixels together.
-    img_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
     graph = nx.Graph()
-    height, width, _ = img_yuv.shape
+    height, width, _ = image.shape
 
     for y1 in range(height):
         for x1 in range(width):
@@ -27,13 +26,14 @@ def create_similarity_graph(image):
 
 # Check if the pixels are in equality range according to the Kopf-Lischinski algorithm 
 def color_equals(image, x1, y1, x2, y2):
-    y, u, v = cv2.split(image.astype(np.int16))
+    yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
+    y, u, v = cv2.split(yuv.astype(np.int16))
 
-    if 48.0 / 255.0 < abs(y[y1, x1] - y[y2, x2]):
+    if 48.0 < abs(y[y1, x1] - y[y2, x2]):
         return False
-    if 7.0 / 255.0 < abs(u[y1, x1] - u[y2, x2]):
+    if 7.0 < abs(u[y1, x1] - u[y2, x2]):
         return False
-    if 6.0 / 255.0 < abs(v[y1, x1] - v[y2, x2]):
+    if 6.0 < abs(v[y1, x1] - v[y2, x2]):
         return False
     return True
 
@@ -41,21 +41,23 @@ def color_equals(image, x1, y1, x2, y2):
 def remove_diagonals(graph, image): 
     height, width, _ = image.shape
 
+    edges_to_remove = []
     for y in range(height - 1):
         for x in range(width - 1):
             corners = graph.nodes[(x, y)]['corners']
-
             connections = 0
             for i, node1 in enumerate(corners):
                 for j, node2 in enumerate(corners[i + 1:]):
                     if graph.has_edge(node1, node2):
                         connections += 1
-            
+
             if connections == 6:
-                graph.remove_edges_from([((x, y), (x + 1, x + 1)), ((x + 1, x), (x, y + 1))])
+                edges_to_remove.append(((x, y), (x + 1, y + 1)))
+                edges_to_remove.append(((x + 1, y), (x, y + 1)))
             elif connections == 2 and graph.has_edge((x, y), (x + 1, y + 1)) and graph.has_edge(( x+ 1, y), (x, y + 1)):
                 remove_diagonal_gestalt((x, y), graph)
 
+    graph.remove_edges_from(edges_to_remove)
     return graph
 
 # Remove a single diagonal if the square contains only diagonal connections
@@ -63,10 +65,15 @@ def remove_diagonal_gestalt(node, graph):
     # Weights for diagonals where weights[0] is the weight for (x, y) -> (x + 1, y + 1)
     # and weights[1] is the weight for (x + 1, y) -> (x, y + 1)
     x, y = node
+    print(node)
     weights = np.array([0, 0])
     weights += getCurvesScore(node, graph)
+    print("Curve Score", getCurvesScore(node, graph))
     weights += getSparsePixelsScore(node, graph)
+    print("Sparse Score", getSparsePixelsScore(node, graph))
     weights += getIslandsScore(node, graph)
+    print("Island", getIslandsScore(node, graph))
+    print()
 
     if weights[0] > weights[1]:
         graph.remove_edge((x + 1, y), (x, y + 1))
@@ -77,7 +84,7 @@ def remove_diagonal_gestalt(node, graph):
 
 def getCurvesScore(node, graph):
     x, y = node
-    return np.array([findCurveLength(node, (x + 1, y + 1),  graph),\
+    return np.array([findCurveLength((x, y), (x + 1, y + 1),  graph),\
                      findCurveLength((x + 1, y), (x - 1, y + 1), graph)])
 
 def findCurveLength(node1, node2, graph):
@@ -116,7 +123,7 @@ def getSparsePixelsScore(node, graph):
     component1 = nx.ego_graph(graph, node, radius = 4).nodes()
     component2 = nx.ego_graph(graph, (x + 1, y), radius = 4).nodes()
 
-    return np.array([len(component1), len(component2)])
+    return np.array([len(component2), len(component1)])
 
 def getIslandsScore(node, graph):
     x, y = node
