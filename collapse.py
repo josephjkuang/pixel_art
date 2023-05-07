@@ -4,6 +4,7 @@ from similarityGraph import *
 import matplotlib.pyplot as plt
 import networkx as nx
 
+# Combines regions of the same color to one polygon
 def union_same_color_regions(graph, vor, point_to_region):
     point_to_index = {tuple(point) : i for i, point in enumerate(vor.filtered_points)}
 
@@ -23,6 +24,7 @@ def union_same_color_regions(graph, vor, point_to_region):
 
     return color_regions
 
+# Reduces points on the same segment to one line segment
 def reduce_line_segments(vertices):
     new_vertices = vertices.copy()
     removals = 0
@@ -39,6 +41,7 @@ def reduce_line_segments(vertices):
     
     return new_vertices
 
+# Creating the segments for the spline curves
 def get_collapsed_segments(graph, vor, point_to_region, width, height):
     color_regions = union_same_color_regions(graph, vor, point_to_region)
 

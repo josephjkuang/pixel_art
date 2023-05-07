@@ -22,6 +22,7 @@ def get_voronoi_nodes(graph):
 
     return np.array(nodes), point_to_color
 
+# Add the midpoints to the valence-2 edges
 def add_midpoints(graph):
     old_graph = graph.copy()
 
@@ -115,7 +116,7 @@ def get_region_point_indices(vor):
     return pt_to_region
 
 # Graph the voronoi and find the segments that create the polygons
-def get_segments(width, height, vor, graph, point_to_region):    
+def graph_voronoi(width, height, vor, graph, point_to_region):    
     # Create the figure base for image
     fig = plt.figure()
     ax = fig.gca()
@@ -124,7 +125,7 @@ def get_segments(width, height, vor, graph, point_to_region):
     ax.invert_yaxis()
     ax.set_aspect('equal')
 
-    # Loop through all original input points to get segments
+    # Loop through all original input points and filling the region with color
     segments = set()
     for index, point in enumerate(vor.filtered_points):
         # Matching the point to the region
@@ -134,19 +135,3 @@ def get_segments(width, height, vor, graph, point_to_region):
         # Filling the region with color
         c = tuple(graph.nodes[tuple(point)]['color'])
         ax.fill([vertex[0] for vertex in vertices], [vertex[1] for vertex in vertices], color=(c[2]/255.0, c[1]/255.0, c[0]/255.0))
-
-        # Get the line segments that aren't just boundary points
-        prev_on_boundary = on_boundary(vertices[0], width, height)
-        # prev_on_boundary = (vertices[0] in vor.filtered_points)
-        for i in range(1, len(vertices)): 
-            curr_on_boundary = on_boundary(vertices[i], width, height)
-            # curr_on_boundary = (vertices[i] in vor.filtered_points)
-            if (not prev_on_boundary) or (not curr_on_boundary):
-                point1 = (vertices[i - 1][0], vertices[i - 1][1])
-                point2 = (vertices[i][0], vertices[i][1])
-                if (point2, point1) not in segments:
-                    segments.add((point1, point2))
-            prev_on_boundary = curr_on_boundary
-
-    segments = np.array([np.array([np.array([x, y]) for x, y in tup]) for tup in segments])    
-    return segments
