@@ -66,10 +66,15 @@ def remove_diagonal_gestalt(node, graph):
     # Weights for diagonals where weights[0] is the weight for (x, y) -> (x + 1, y + 1)
     # and weights[1] is the weight for (x + 1, y) -> (x, y + 1)
     x, y = node
+    print(node)
     weights = np.array([0, 0])
     weights += getCurvesScore(node, graph)
+    print("Curve Score", getCurvesScore(node, graph))
     weights += getSparsePixelsScore(node, graph)
+    print("Sparse Score", getSparsePixelsScore(node, graph))
     weights += getIslandsScore(node, graph)
+    print("Island", getIslandsScore(node, graph))
+    print()
 
     if weights[0] > weights[1]:
         graph.remove_edge((x + 1, y), (x, y + 1))
