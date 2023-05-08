@@ -29,7 +29,7 @@ def reduce_line_segments(vertices):
     new_vertices = vertices.copy()
     removals = 0
 
-    for i in range(len(vertices) - 3):
+    for i in range(len(vertices) - 2):
         x1, y1 = vertices[i]
         x2, y2 = vertices[i + 1]
         x3, y3 = vertices[i + 2]
