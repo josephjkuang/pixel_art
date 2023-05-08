@@ -12,7 +12,8 @@ def create_similarity_graph(image):
         for x1 in range(width):
             # Adding the nodes to the graph
             corners = [(x1, y1), (x1 + 1, y1), (x1, y1 + 1), (x1 + 1, y1 + 1)]
-            graph.add_node((x1, y1), value=image[y1, x1, :], corners=corners)
+            color = image[y1][x1]
+            graph.add_node((x1, y1), color=image[y1][x1], corners=corners)
 
             # Adding the neighbor nodes (8 / 2 = 4 neighbors to ignore repeats)
             neighbors = [(x1 + 1, y1), (x1, y1 + 1) , (x1 + 1, y1 + 1), (x1 + 1, y1 - 1)]

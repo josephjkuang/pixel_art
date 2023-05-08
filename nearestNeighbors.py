@@ -1,6 +1,5 @@
 import numpy as np
 import math
-import cv2
 
 def nearestNeighborsInterpolation(image, scale):
     # Upscaling only
@@ -24,8 +23,3 @@ def nearestNeighborsInterpolation(image, scale):
                 outputImage[i, j, k] = interpolatedPixel
     
     return outputImage 
-
-
-mario = cv2.imread('../inputs/mario.png')
-upscaledMario = nearestNeighborsInterpolation(mario, 5)
-cv2.imwrite('./nearestNeighborsMario.png', upscaledMario)
