@@ -10,7 +10,7 @@ The Project is organized such that the various mehthods are stored in python fil
 
 To run the tests, open Test.ipynb in Jupyter Notebook.
 
-To run the code on the inputs, open the Upscale.ipynb in Jupyter notebook and run the cells with the correct files.
+To run the code on the inputs, open the Upscale.ipynb in Jupyter notebook and run the cells in order with the correct input files specified.
 
 ## Requirements
 
